@@ -23,6 +23,8 @@ echo "OPENAI_API_KEY=your_key_here" > .env
 echo "GROQ_API_KEY=your_groq_key_here" >> .env
 ```
 
+**Note**: API keys are optional! The system automatically falls back to HuggingFace (local) when API keys are missing.
+
 ## Provider Combinations
 
 ### 1. OpenAI Embeddings + OpenAI LLM (Default)
@@ -68,6 +70,23 @@ python qa.py --question "How do I reset my password?" --embedding-provider huggi
 python qa.py --question "What are the API endpoints?" --embedding-provider huggingface --llm-provider huggingface --hf-model google/flan-t5-small
 python qa.py --question "How do I configure webhooks?" --embedding-provider huggingface --llm-provider huggingface --hf-model distilgpt2
 python qa.py --question "What user roles are supported?" --embedding-provider huggingface --llm-provider huggingface --hf-model google/flan-t5-base
+```
+
+## Automatic Fallback System
+
+The system automatically falls back to HuggingFace when API keys are missing:
+
+- **Missing OpenAI key**: Falls back to `huggingface` for embeddings/LLM
+- **Missing GROQ key**: Falls back to `huggingface` for LLM  
+- **No API keys needed**: Use `--embedding-provider huggingface --llm-provider huggingface` for fully local operation
+
+**Example without any API keys:**
+```bash
+# This works even without .env file
+python qa.py --question "How do I reset my password?"
+# WARNING: OpenAI API key not found for embeddings. Falling back to HuggingFace embeddings.
+# WARNING: OpenAI API key not found for LLM. Falling back to HuggingFace LLM.
+# Using providers: embeddings=huggingface, llm=huggingface
 ```
 
 ## Troubleshooting
