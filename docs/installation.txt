@@ -1,0 +1,7 @@
+Step 1: Clone the repo (git clone https://… && cd docuqa).
+Step 2: Create and activate a virtual environment:
+  python3 -m venv venv
+  source venv/bin/activate
+Step 3: Install dependencies:
+  pip install -r requirements.txt
+Requires Python 3.8 or higher.

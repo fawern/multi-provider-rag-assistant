@@ -1,0 +1,4 @@
+DocuQA defines three roles with distinct permissions:
+Admin can manage users, view logs, and update settings.
+Editor can create and edit documentation pages.
+Viewer can read documents and ask questions but cannot modify content.

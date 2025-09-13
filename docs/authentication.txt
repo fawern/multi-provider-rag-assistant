@@ -1,0 +1,4 @@
+Before running, set your API keys as environment variables.
+Use OPENAI_API_KEY for OpenAI models and LLAMA_API_KEY for hosted Llama endpoints.
+To use a local embedding model, adjust settings in config/settings.py.
+Never commit your API keys to version control.

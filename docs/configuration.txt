@@ -1,0 +1,4 @@
+All settings live in config/settings.py:
+EMBEDDING_MODEL, LLM_MODEL, VECTOR_STORE, CHUNK_SIZE, TOP_K.
+To override defaults, export the corresponding environment variables.
+Restart the application after making any changes.

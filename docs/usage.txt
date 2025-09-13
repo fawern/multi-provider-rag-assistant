@@ -1,0 +1,5 @@
+Invoke the CLI with:
+  python qa.py --question "Your question here"
+Use --top_k to adjust how many passages are retrieved.
+Enter interactive mode with:
+  python qa.py --interactive

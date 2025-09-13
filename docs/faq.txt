@@ -1,0 +1,10 @@
+Can I use a local LLM?
+Yes—set LLM_PROVIDER to local in config/settings.py and install your model.
+
+How do I update documents?
+Edit files in the docs folder, then rerun the index command.
+
+Why are answers incomplete?
+Try increasing TOP_K or chunk size in settings.
+
+For more, check the issue tracker or contact support.

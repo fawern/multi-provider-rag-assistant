@@ -1,0 +1,4 @@
+The HTTP API supports three endpoints:
+POST /api/index   → build or rebuild the index
+POST /api/query   → payload: { question, top_k }
+GET  /api/status  → returns { ready: true } when the index is ready

@@ -1,0 +1,4 @@
+To export past queries to CSV, run:
+  python export_logs.py --output logs.csv
+The CSV includes timestamp, question, answer, and sources.
+Customize fields by editing export_logs.py before running.

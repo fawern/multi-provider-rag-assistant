@@ -1,0 +1,4 @@
+1001: Configuration file not found
+1002: Missing API key
+2001: Vector store unreachable
+3001: LLM generation timed out

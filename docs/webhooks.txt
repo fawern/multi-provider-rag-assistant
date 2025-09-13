@@ -1,0 +1,4 @@
+Webhooks notify external services on index rebuild events.
+Configure event URLs in config/webhooks.yaml under “index_rebuilt”.
+DocuQA POSTs a JSON payload with event and timestamp.
+Retries occur up to three times with exponential backoff.

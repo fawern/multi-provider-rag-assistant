@@ -1,0 +1,4 @@
+Welcome to DocuQA, your internal document Q&A assistant.
+This tool lets you query project documentation using a retrieval-augmented generation pipeline.
+It finds relevant text via embeddings, then uses an LLM to craft concise answers.
+Drop your plain-text files into the docs folder to get started.
