@@ -2,6 +2,28 @@
 
 A command-line RAG system supporting OpenAI, GROQ, and HuggingFace providers with automatic document ingestion.
 
+## Quick Install & Setup
+
+```bash
+# Clone the repository
+git clone https://github.com/fawern/multi-provider-rag-assistant.git
+cd multi-provider-rag-assistant
+
+# Create virtual environment
+python -m venv venv
+# venv\Scripts\activate  # Windows
+# source venv/bin/activate  # Linux/Mac
+
+pip install -r requirements.txt
+
+# Optional: Add API keys (or use local HuggingFace fallback)
+echo "OPENAI_API_KEY=your_key_here" > .env
+echo "GROQ_API_KEY=your_groq_key_here" >> .env
+
+# Test the system (works without API keys!)
+python qa.py --question "How do I reset my password?"
+```
+
 ## How It Works
 
 The system uses two separate providers:
