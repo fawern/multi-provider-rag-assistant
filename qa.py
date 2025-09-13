@@ -11,25 +11,34 @@ from config import ProviderConfig, ProviderFactory, setup_logging, validate_conf
 logger = logging.getLogger(__name__)
 console = Console()
 
+def check_embedding_compatibility(config):
+    if not os.path.exists(config.vector_store_path):
+        return False
+    
+    try:
+        embeddings = ProviderFactory.get_embeddings(config)
+        test_embedding = embeddings.embed_query("test")
+        current_dim = len(test_embedding)
+        
+        vector_store = FAISS.load_local(config.vector_store_path, embeddings, allow_dangerous_deserialization=True)
+        stored_dim = vector_store.index.d
+        
+        return current_dim == stored_dim
+    except:
+        return False
+
 def get_or_create_vectorstore(config):
     
-    if not os.path.exists(config.vector_store_path):
-        logger.info("Creating vector store...")
+    if not os.path.exists(config.vector_store_path) or not check_embedding_compatibility(config):
+        if os.path.exists(config.vector_store_path):
+            logger.warning("Embedding dimension mismatch. Rebuilding vector store...")
+            shutil.rmtree(config.vector_store_path)
+        else:
+            logger.info("Creating vector store...")
         create_vectorstore(config)
     
     embeddings = ProviderFactory.get_embeddings(config)
-
-    try:
-        return FAISS.load_local(config.vector_store_path, embeddings, allow_dangerous_deserialization=True)
-    except (AssertionError, Exception) as e:
-        if "d == self.d" in str(e) or "dimension" in str(e).lower():
-            logger.warning("Dimension mismatch. Rebuilding vector store...")
-            if os.path.exists(config.vector_store_path):
-                shutil.rmtree(config.vector_store_path)
-            create_vectorstore(config)
-            return FAISS.load_local(config.vector_store_path, embeddings, allow_dangerous_deserialization=True)
-        else:
-            raise
+    return FAISS.load_local(config.vector_store_path, embeddings, allow_dangerous_deserialization=True)
 
 def create_vectorstore(config):
 
@@ -53,36 +62,8 @@ def answer_question(question, config):
         return_source_documents=True
     )
     
-    try:
-        result = qa_chain.invoke({"query": question})
-        return result["result"]
-    except Exception as e:
-        error_str = str(e)
-        if (
-                "d == self.d" in error_str or 
-                "dimension" in error_str.lower() or
-                "assert d == self.d" in error_str or
-                isinstance(e, AssertionError)
-            ):
-            
-            logger.warning("Dimension mismatch detected. Rebuilding vector store...")
-            if os.path.exists(config.vector_store_path):
-                shutil.rmtree(config.vector_store_path)
-            
-            vector_store = get_or_create_vectorstore(config)
-            retriever = vector_store.as_retriever(search_kwargs={"k": config.retrieval_k})
-
-            qa_chain = RetrievalQA.from_chain_type(
-                llm=llm, 
-                chain_type="stuff", 
-                retriever=retriever,
-                return_source_documents=True
-            )
-            result = qa_chain.invoke({"query": question})
-
-            return result["result"]
-        else:
-            raise
+    result = qa_chain.invoke({"query": question})
+    return result["result"]
 
 @click.command()
 @click.option('--question', required=True, help='Question to ask')
