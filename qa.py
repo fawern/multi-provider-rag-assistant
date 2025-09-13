@@ -6,7 +6,7 @@ from langchain.chains import RetrievalQA
 from langchain_community.vectorstores import FAISS
 from rich.console import Console
 
-from config import ProviderConfig, ProviderFactory, setup_logging, validate_config
+from config import ProviderConfig, ProviderFactory, setup_logging, validate_config, apply_fallback_providers
 
 logger = logging.getLogger(__name__)
 console = Console()
@@ -82,6 +82,8 @@ def main(question, embedding_provider, llm_provider, hf_model, k, log_level):
         huggingface_model=hf_model,
         retrieval_k=k
     )
+    
+    config = apply_fallback_providers(config)
     
     if not validate_config(config):
         print("Configuration error")
