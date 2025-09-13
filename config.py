@@ -89,19 +89,30 @@ def setup_logging(level: str = "INFO"):
         format='%(levelname)s: %(message)s'
     )
 
-def validate_config(config: ProviderConfig, check_llm: bool = True) -> bool:
+def apply_fallback_providers(config: ProviderConfig, check_llm: bool = True) -> ProviderConfig:
+    modified = False
+    
     if config.embedding_provider == "openai" and not os.getenv("OPENAI_API_KEY"):
-        logger.error("OpenAI API key required")
-        return False
+        print("WARNING: OpenAI API key not found for embeddings. Falling back to HuggingFace embeddings.")
+        config.embedding_provider = "huggingface"
+        modified = True
     
-    if check_llm and config.llm_provider == "openai" and not os.getenv("OPENAI_API_KEY"):
-        logger.error("OpenAI API key required")
-        return False
+    if check_llm:
+        if config.llm_provider == "openai" and not os.getenv("OPENAI_API_KEY"):
+            print("WARNING: OpenAI API key not found for LLM. Falling back to HuggingFace LLM.")
+            config.llm_provider = "huggingface"
+            modified = True
+        elif config.llm_provider == "groq" and not os.getenv("GROQ_API_KEY"):
+            print("WARNING: GROQ API key not found for LLM. Falling back to HuggingFace LLM.")
+            config.llm_provider = "huggingface"
+            modified = True
     
-    if check_llm and config.llm_provider == "groq" and not os.getenv("GROQ_API_KEY"):
-        logger.error("GROQ API key required")
-        return False
-    
+    if modified:
+        print(f"Using providers: embeddings={config.embedding_provider}, llm={config.llm_provider}")
+        
+    return config
+
+def validate_config(config: ProviderConfig, check_llm: bool = True) -> bool:
     if not os.path.exists(config.docs_path):
         logger.error(f"Documents directory not found: {config.docs_path}")
         return False
