@@ -5,7 +5,7 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.document_loaders import DirectoryLoader, TextLoader
 from langchain_community.vectorstores import FAISS
 
-from config import ProviderConfig, ProviderFactory, setup_logging, validate_config
+from config import ProviderConfig, ProviderFactory, setup_logging, validate_config, apply_fallback_providers
 
 logger = logging.getLogger(__name__)
 
@@ -56,6 +56,8 @@ def main(embedding_provider, log_level):
     setup_logging(log_level)
     
     config = ProviderConfig(embedding_provider=embedding_provider)
+    
+    config = apply_fallback_providers(config, check_llm=False)
     
     if not validate_config(config, check_llm=False):
         print("Configuration error")
