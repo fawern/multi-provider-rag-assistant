@@ -1,6 +1,20 @@
-# Hybrid LangChain RAG Assistant
+# Multi-Provider RAG Assistant
 
-A command-line RAG system supporting OpenAI, GROQ, and HuggingFace providers with automatic document ingestion.
+A command-line RAG system supporting OpenAI, GROQ, and HuggingFace providers with automatic document ingestion and fallback mechanisms.
+
+## Installation
+
+### From PyPI (Recommended)
+```bash
+pip install multi-provider-rag-assistant
+```
+
+### From Source
+```bash
+git clone https://github.com/fawern/multi-provider-rag-assistant
+cd multi-provider-rag-assistant
+pip install -e .
+```
 
 ## How It Works
 
@@ -18,58 +32,65 @@ The system uses two separate providers:
 ## Setup
 
 ```bash
-pip install -r requirements.txt
+# Optional: Create API keys file
 echo "OPENAI_API_KEY=your_key_here" > .env
 echo "GROQ_API_KEY=your_groq_key_here" >> .env
 ```
 
 **Note**: API keys are optional! The system automatically falls back to HuggingFace (local) when API keys are missing.
 
+## Quick Start
+
+```bash
+# Works immediately after installation - no setup required!
+multi-provider-rag --question "How do I reset my password?"
+```
+
 ## Provider Combinations
 
 ### 1. OpenAI Embeddings + OpenAI LLM (Default)
 **Embeddings**: OpenAI text-embedding-3-small | **LLM**: OpenAI gpt-4o-mini
 ```bash
-python qa.py --question "How do I reset my password?"
-python qa.py --question "What are the API endpoints?"
-python qa.py --question "How do I configure webhooks?" 
-python qa.py --question "What user roles are supported?"
+multi-provider-rag --question "How do I reset my password?"
+multi-provider-rag --question "What are the API endpoints?"
+multi-provider-rag --question "How do I configure webhooks?" 
+multi-provider-rag --question "What user roles are supported?"
 ```
 
 ### 2. OpenAI Embeddings + GROQ LLM
 **Embeddings**: OpenAI text-embedding-3-small | **LLM**: GROQ openai/gpt-oss-120b
 ```bash
-python qa.py --question "How do I reset my password?" --llm-provider groq
-python qa.py --question "What are the API endpoints?" --llm-provider groq
-python qa.py --question "How do I configure webhooks?" --llm-provider groq
-python qa.py --question "What user roles are supported?" --llm-provider groq
+multi-provider-rag --question "How do I reset my password?" --llm-provider groq
+multi-provider-rag --question "What are the API endpoints?" --llm-provider groq
+multi-provider-rag --question "How do I configure webhooks?" --llm-provider groq
+multi-provider-rag --question "What user roles are supported?" --llm-provider groq
 ```
 
 ### 3. OpenAI Embeddings + HuggingFace LLM
 **Embeddings**: OpenAI text-embedding-3-small | **LLM**: Local HuggingFace models
 ```bash
-python qa.py --question "How do I reset my password?" --llm-provider huggingface --hf-model google/flan-t5-small
-python qa.py --question "What are the API endpoints?" --llm-provider huggingface --hf-model distilgpt2
-python qa.py --question "How do I configure webhooks?" --llm-provider huggingface --hf-model microsoft/DialoGPT-small
-python qa.py --question "What user roles are supported?" --llm-provider huggingface --hf-model google/flan-t5-base
+multi-provider-rag --question "How do I reset my password?" --llm-provider huggingface --hf-model google/flan-t5-small
+multi-provider-rag --question "What are the API endpoints?" --llm-provider huggingface --hf-model distilgpt2
+multi-provider-rag --question "How do I configure webhooks?" --llm-provider huggingface --hf-model microsoft/DialoGPT-small
+multi-provider-rag --question "What user roles are supported?" --llm-provider huggingface --hf-model google/flan-t5-base
 ```
 
 ### 4. HuggingFace Embeddings + OpenAI LLM
 **Embeddings**: HuggingFace sentence-transformers/all-MiniLM-L6-v2 | **LLM**: OpenAI gpt-4o-mini
 ```bash
-python qa.py --question "How do I reset my password?" --embedding-provider huggingface
-python qa.py --question "What are the API endpoints?" --embedding-provider huggingface --k 5
-python qa.py --question "How do I configure webhooks?" --embedding-provider huggingface
-python qa.py --question "What user roles are supported?" --embedding-provider huggingface
+multi-provider-rag --question "How do I reset my password?" --embedding-provider huggingface
+multi-provider-rag --question "What are the API endpoints?" --embedding-provider huggingface --k 5
+multi-provider-rag --question "How do I configure webhooks?" --embedding-provider huggingface
+multi-provider-rag --question "What user roles are supported?" --embedding-provider huggingface
 ```
 
 ### 5. HuggingFace Embeddings + HuggingFace LLM (Fully Local)
 **Embeddings**: HuggingFace sentence-transformers/all-MiniLM-L6-v2 | **LLM**: Local HuggingFace models
 ```bash
-python qa.py --question "How do I reset my password?" --embedding-provider huggingface --llm-provider huggingface
-python qa.py --question "What are the API endpoints?" --embedding-provider huggingface --llm-provider huggingface --hf-model google/flan-t5-small
-python qa.py --question "How do I configure webhooks?" --embedding-provider huggingface --llm-provider huggingface --hf-model distilgpt2
-python qa.py --question "What user roles are supported?" --embedding-provider huggingface --llm-provider huggingface --hf-model google/flan-t5-base
+multi-provider-rag --question "How do I reset my password?" --embedding-provider huggingface --llm-provider huggingface
+multi-provider-rag --question "What are the API endpoints?" --embedding-provider huggingface --llm-provider huggingface --hf-model google/flan-t5-small
+multi-provider-rag --question "How do I configure webhooks?" --embedding-provider huggingface --llm-provider huggingface --hf-model distilgpt2
+multi-provider-rag --question "What user roles are supported?" --embedding-provider huggingface --llm-provider huggingface --hf-model google/flan-t5-base
 ```
 
 ## Automatic Fallback System
@@ -83,15 +104,33 @@ The system automatically falls back to HuggingFace when API keys are missing:
 **Example without any API keys:**
 ```bash
 # This works even without .env file
-python qa.py --question "How do I reset my password?"
+multi-provider-rag --question "How do I reset my password?"
 # WARNING: OpenAI API key not found for embeddings. Falling back to HuggingFace embeddings.
 # WARNING: OpenAI API key not found for LLM. Falling back to HuggingFace LLM.
 # Using providers: embeddings=huggingface, llm=huggingface
 ```
 
-## Troubleshooting
+## Additional Commands
 
-If you get dimension errors, clear the vector store:
 ```bash
-python clear_vectorstore.py
+# Manually ingest documents
+multi-provider-rag-ingest --embedding-provider huggingface
+
+# Clear vector store (fix dimension errors)
+multi-provider-rag-clear
+
+# Get help
+multi-provider-rag --help
+```
+
+## Development
+
+### From Source
+```bash
+git clone https://github.com/fawern/multi-provider-rag-assistant
+cd multi-provider-rag-assistant
+pip install -e .
+
+# Run with source code
+python -m rag_assistant.qa --question "How do I reset my password?"
 ```
